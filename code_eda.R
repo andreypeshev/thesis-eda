@@ -1,10 +1,9 @@
 # prb = Percentage Relative Bias
-# sb = Standardized Bias
 # mcsd = Monte Carlo Standard Deviation
-# sig = Significance Flags (used to compute power and Type-I error rates)
-# cic = Confidence Interval Coverage
-# ciw = Average Confidence Interval Width
-# data gen equation: Y = 1.0 + 0.33X + 0.33Z 1 + 0.33Z 2 + ε
+# data gen equation: Y = 1.0 + 0.33X + 0.33Z1 + 0.33Z2 + ε
+
+#clear the working enviornment 
+rm(list=ls())
 
 #import libraries
 library(ggplot2)
@@ -18,12 +17,32 @@ data_mcsd <- all_data$mcsd
 summary(data_prb[1:7])
 summary(data_mcsd[1:7])
 
-ggplot(data_prb, aes(x)) + geom_density(aes(col=a))
-# ggplot(data_prb, aes(x)) + geom_density(aes(col=b))
-# ggplot(data_prb, aes(x)) + geom_density(aes(col=c))
-# ggplot(data_prb, aes(x)) + geom_density(aes(col=d))
-# ggplot(data_prb, aes(x)) + geom_density(aes(col=e))
-# ggplot(data_prb, aes(x)) + geom_density(aes(col=f))
-# ggplot(data_prb, aes(x)) + geom_density(aes(col=g))
+#boxplots for prb with the different conditions
+ggplot(data_prb, aes(x=a, y=x)) + geom_boxplot()
+ggplot(data_prb, aes(x=b, y=x)) + geom_boxplot()
+ggplot(data_prb, aes(x=c, y=x)) + geom_boxplot()
+ggplot(data_prb, aes(x=d, y=x)) + geom_boxplot()
+ggplot(data_prb, aes(x=e, y=x)) + geom_boxplot()
+ggplot(data_prb, aes(x=f, y=x)) + geom_boxplot()
+ggplot(data_prb, aes(x=g, y=x)) + geom_boxplot()
+
+# ggplot(data_prb, aes(int)) + geom_density(aes(col=a))
+# ggplot(data_prb, aes(int)) + geom_density(aes(col=b))
+# ggplot(data_prb, aes(int)) + geom_density(aes(col=c))
+# ggplot(data_prb, aes(int)) + geom_density(aes(col=d))
+# ggplot(data_prb, aes(int)) + geom_density(aes(col=e))
+# ggplot(data_prb, aes(int)) + geom_density(aes(col=f))
+# ggplot(data_prb, aes(int)) + geom_density(aes(col=g))
+# 
+# ggplot(data_prb, aes(z1)) + geom_density(aes(col=a))
+# ggplot(data_prb, aes(z1)) + geom_density(aes(col=b))
+# ggplot(data_prb, aes(z1)) + geom_density(aes(col=c))
+# ggplot(data_prb, aes(z1)) + geom_density(aes(col=d))
+# ggplot(data_prb, aes(z1)) + geom_density(aes(col=e))
+# ggplot(data_prb, aes(z1)) + geom_density(aes(col=f))
+# ggplot(data_prb, aes(z1)) + geom_density(aes(col=g))
+
+
+
 
 
