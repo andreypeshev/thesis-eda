@@ -43,4 +43,15 @@ for (i in 1:length(data_prb[1:7])){
 data_prb[which.min(abs(data_prb$x)),]
 data_prb[which.max(abs(data_prb$x)),]
 
+#couting the different number of conditions for slope PRB smaller than -10
+prb_x_smallneg <- data_prb[data_prb$x < -10, ]
+
+for (i in 1:length(prb_x_smallneg[1:7])){
+  print(ggplot(prb_x_smallneg, aes(x=prb_x[,i])) + geom_bar() + xlab(colnames(prb_x_smallneg[i])))
+}
+
+
+data_prb[data_prb$x < 1 & data_prb$x > 0, ]
+
+
 
