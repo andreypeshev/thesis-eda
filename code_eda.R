@@ -18,13 +18,10 @@ summary(data_prb[1:7])
 summary(data_mcsd[1:7])
 
 #boxplots for prb with the different conditions
-ggplot(data_prb, aes(x=a, y=x)) + geom_boxplot()
-ggplot(data_prb, aes(x=b, y=x)) + geom_boxplot()
-ggplot(data_prb, aes(x=c, y=x)) + geom_boxplot()
-ggplot(data_prb, aes(x=d, y=x)) + geom_boxplot()
-ggplot(data_prb, aes(x=e, y=x)) + geom_boxplot()
-ggplot(data_prb, aes(x=f, y=x)) + geom_boxplot()
-ggplot(data_prb, aes(x=g, y=x)) + geom_boxplot()
+
+for (i in 1:length(data_prb[1:7])){
+  print(ggplot(data_prb, aes(x=data_prb[, i], y=x)) + geom_boxplot() + xlab(colnames(data_prb[i])))
+}
 
 # ggplot(data_prb, aes(int)) + geom_density(aes(col=a))
 # ggplot(data_prb, aes(int)) + geom_density(aes(col=b))
@@ -33,7 +30,7 @@ ggplot(data_prb, aes(x=g, y=x)) + geom_boxplot()
 # ggplot(data_prb, aes(int)) + geom_density(aes(col=e))
 # ggplot(data_prb, aes(int)) + geom_density(aes(col=f))
 # ggplot(data_prb, aes(int)) + geom_density(aes(col=g))
-# 
+
 # ggplot(data_prb, aes(z1)) + geom_density(aes(col=a))
 # ggplot(data_prb, aes(z1)) + geom_density(aes(col=b))
 # ggplot(data_prb, aes(z1)) + geom_density(aes(col=c))
@@ -42,7 +39,8 @@ ggplot(data_prb, aes(x=g, y=x)) + geom_boxplot()
 # ggplot(data_prb, aes(z1)) + geom_density(aes(col=f))
 # ggplot(data_prb, aes(z1)) + geom_density(aes(col=g))
 
-
-
+#max and min PRB 
+data_prb[which.min(abs(data_prb$x)),]
+data_prb[which.max(abs(data_prb$x)),]
 
 
