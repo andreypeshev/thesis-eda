@@ -1,0 +1,90 @@
+---
+title: "Bachelor's Thesis: Simulation Data EDA"
+author: "Andrey Peshev"
+output: html_notebook
+---
+* prb = Percentage Relative Bias  
+* mcsd = Monte Carlo Standard Deviation\
+* Data generation equation: Y = 1.0 + 0.33X + 0.33Z1 + 0.33Z2 + Îµ\
+
+Simulation parameters: \
+Proportion of the MAR predictor represented in the analysis model: pMAR = {1.0, 0.75, 0.5, 0.25, 0.0}\
+Strength of correlations among the predictors: rXZ = {0.0, 0.1, 0.3, 0.5}\
+Sample size: N = {100, 250, 500}\
+Proportion of missing data: PM = {0.1, 0.2, 0.4}\
+R^2^ for the data generating model: R^2 = {0.15, 0.3, 0.6}\
+
+
+## Importing data and libraries
+```{r Imports}
+#clear the working environment 
+rm(list=ls())
+
+#import libraries
+library(ggplot2)
+
+#import data
+all_data <- readRDS("data/masked_outcome_measures.rds")
+data_prb <- all_data$prb
+data_mcsd <- all_data$mcsd
+```
+
+## 1. Understanding the structure of the data 
++ #### Data summaries\
+
+```{r}
+#general summary of the data
+summary(data_prb)
+summary(data_mcsd)
+```
+Columns **a** through **g** are the different conditions of the simulation. An interesting thing to note is that condition **1** of parameter **a** has only 540 occurrences and condition **8** of parameter **b** has 1620.
+
++ #### Number of unique conditions for each parameter:\
+```{r}
+apply(data_prb[1:7], 2, function(x) length(unique(x)))
+```
+
+The analysis will begin with the PRB because it is necessary to understand which conditions are biased in order to make cross-references with the MCSD.
+
++ #### Boxplots with condition on the x-axis and PRB on y-axis for int, x, z1:\
+```{r}
+#boxplots for prb with the different conditions for x
+for (i in 1:length(data_prb[1:7])){
+  print(ggplot(data_prb, aes(x=data_prb[, i], y=x)) + geom_boxplot() + xlab(colnames(data_prb[i])))
+}
+```
+```{r}
+#boxplots for prb with the different conditions for int
+for (i in 1:length(data_prb[1:7])){
+  print(ggplot(data_prb, aes(x=data_prb[, i], y=int)) + geom_boxplot() + xlab(colnames(data_prb[i])))
+}
+```
+```{r}
+#boxplots for prb with the different conditions for z1
+for (i in 1:length(data_prb[1:7])){
+  print(ggplot(data_prb, aes(x=data_prb[, i], y=z1)) + geom_boxplot() + xlab(colnames(data_prb[i])))
+}
+```
+Parameter **a**: The largest PRB for the slope and intercept is in condition **3** and in condition **1** for the auxiliary variable.\
+
+Parameter **b**: The mean PRB for *x* in all conditions is almost identical and below zero. The situation is similar for *int*, except for condition **8** - The 75th percentile range is higher and there are more outliers. The mean and 75th percentile range for **z1** in condition **8** is higher and the mean is lower than the other conditions. 
+
+Parameter **c**: The highest mean PRB for **x** is in condition **3**. For **int** the mean is the same across conditions, however the IQR increases. Same goes for **z1**, although the increase is not as drastic. 
+
+Parameter **d**: The IQR decreases for **x** until condition **4**. For **int** the IQR decreases drastically. For **z1** the situation is more interesting - The IQR increases until condition **3** and then decreases again. 
+
+Parameter **e**: The IQR decreases in each condition for **x**. For **int** and **z1** the PRB distribution looks identical across conditions, except for the many outliers in condition **1** for **z1**. 
+
+Parameter **f**: There seems to be no visible difference across the conditions for all three parameters. 
+
+Parameter **g**: The IQR becomes smaller for **int** and **z1**.  Almost no difference in conditions for **x**. 
+
+```{r}
+
+
+```
+
+
+
+
+
