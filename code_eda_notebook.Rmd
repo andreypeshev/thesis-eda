@@ -37,13 +37,12 @@ data_mcsd <- all_data$mcsd
 summary(data_prb)
 summary(data_mcsd)
 ```
-Columns **a** through **g** are the different conditions of the simulation. An interesting thing to note is that condition **1** of parameter **a** has only 540 occurrences and condition **8** of parameter **b** has 1620.
+Columns **a** through **g** are the different conditions of the simulation. An interesting thing to note is that condition **1** of parameter **a** has only 540 occurrences and condition **8** of parameter **b** has 1620.\
 
 + #### Number of unique conditions for each parameter:\
 ```{r}
-apply(data_prb[1:7], 2, function(x) length(unique(x)))
+str(data_prb)
 ```
-
 The analysis will begin with the PRB because it is necessary to understand which conditions are biased in order to make cross-references with the MCSD.
 
 + #### Boxplots with condition on the x-axis and PRB on y-axis for int, x, z1:\
@@ -80,8 +79,6 @@ Parameter **f**: There seems to be no visible difference across the conditions f
 Parameter **g**: The IQR becomes smaller for **int** and **z1**.  Almost no difference in conditions for **x**. 
 
 ```{r}
-
-
 ```
 
 
