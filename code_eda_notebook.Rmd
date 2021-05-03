@@ -22,7 +22,7 @@ rm(list=ls())
 
 #import libraries
 library(ggplot2)
-
+library(dplyr)
 #import data
 all_data <- readRDS("data/masked_outcome_measures.rds")
 data_prb <- all_data$prb
@@ -69,7 +69,6 @@ Parameter **a**: The largest PRB for the slope and intercept is in condition **3
 Parameter **b**: The mean PRB for *x* in all conditions is almost identical and below zero. The situation is similar for *int*, except for condition **8** - The 75th percentile range is higher and there are more outliers. The mean and 75th percentile range for **z1** in condition **8** is higher and the mean is lower than the other conditions. 
 
 Parameter **c**: The highest mean PRB for **x** is in condition **3**. For **int** the mean is the same across conditions, however the IQR increases. Same goes for **z1**, although the increase is not as drastic. 
-
 Parameter **d**: The IQR decreases for **x** until condition **4**. For **int** the IQR decreases drastically. For **z1** the situation is more interesting - The IQR increases until condition **3** and then decreases again. 
 
 Parameter **e**: The IQR decreases in each condition for **x**. For **int** and **z1** the PRB distribution looks identical across conditions, except for the many outliers in condition **1** for **z1**. 
@@ -78,10 +77,27 @@ Parameter **f**: There seems to be no visible difference across the conditions f
 
 Parameter **g**: The IQR becomes smaller for **int** and **z1**.  Almost no difference in conditions for **x**. 
 
-```{r}
+```{r min and max values}
+# min and max PRB for x
+data_prb[which.min(abs(data_prb$x)),]
+data_prb[which.max(abs(data_prb$x)),]
+
+# min and max PRB for int
+data_prb[which.min(abs(data_prb$int)),]
+data_prb[which.max(abs(data_prb$int)),]
+
+# min and max PRB for z1
+data_prb[which.min(abs(data_prb$z1)),]
+data_prb[which.max(abs(data_prb$z1)),]
 ```
 
+```{r}
+xtabs(~ a+b, data=data_prb)
+```
+Condition 1 for the a parameter is only paired with condition 8 of the b parameter.
+```{r}
+data_prb %>% filter(c==3) %>% ggplot(aes(x=e, y=x)) + geom_boxplot()
 
-
+```
 
 
