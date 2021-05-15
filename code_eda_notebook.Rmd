@@ -5,7 +5,7 @@ output: html_notebook
 ---
 * prb = Percentage Relative Bias  
 * mcsd = Monte Carlo Standard Deviation\
-* Data generation equation: Y = 1.0 + 0.33X + 0.33Z1 + 0.33Z2 + Îµ\
+* Data generation equation: Y = 1.0 + 0.33X + 0.33Z1 + 0.33Z2 + e\
 
 Simulation parameters: \
 Proportion of the MAR predictor represented in the analysis model: pMAR = {1.0, 0.75, 0.5, 0.25, 0.0}\
@@ -13,6 +13,8 @@ Strength of correlations among the predictors: rXZ = {0.0, 0.1, 0.3, 0.5}\
 Sample size: N = {100, 250, 500}\
 Proportion of missing data: PM = {0.1, 0.2, 0.4}\
 R^2^ for the data generating model: R^2 = {0.15, 0.3, 0.6}\
+number of imputations:\ 
+imputation type: MID, MI, CC 
 
 
 ## Importing data and libraries
@@ -24,7 +26,7 @@ rm(list=ls())
 library(ggplot2)
 library(dplyr)
 #import data
-all_data <- readRDS("data/masked_outcome_measures.rds")
+all_data <- readRDS("masked_outcome_measures.rds")
 data_prb <- all_data$prb
 data_mcsd <- all_data$mcsd
 ```
@@ -96,8 +98,33 @@ xtabs(~ a+b, data=data_prb)
 ```
 Condition 1 for the a parameter is only paired with condition 8 of the b parameter.
 ```{r}
-data_prb %>% filter(c==3) %>% ggplot(aes(x=e, y=x)) + geom_boxplot()
-
+data_prb %>% filter(a == 2 & b==2 & c==1 & d==1 & e==1) %>% ggplot(aes(x=g, y=x)) + geom_boxplot()
 ```
 
+For-loop comparing conditions of col f and col g
+```{r}
+
+for (cond_a in 1:n_distinct(data_prb$a)){
+  for (cond_b in 1:n_distinct(data_prb$b)){
+    for (cond_c in 1:n_distinct(data_prb$c)){
+      for (cond_d in 1:n_distinct(data_prb$d)){
+        for (cond_e in 1:n_distinct(data_prb$e)){
+          if (cond_a == 1 & cond_b != 8){
+            next
+          }else{
+            filt_data <- data_prb %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e)
+            for (cond_f in 1:n_distinct(filt_data$f)){
+              for (cond_g in 1:n_distinct(filt_data$g)){
+                #sum_fg <- filt_data$x + filt_data$z1
+                print(paste("a =", cond_a, "b =", cond_b, "c =", cond_c, "d =", cond_d, "e =", cond_e, "f=", cond_f, "g=", cond_g))
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+```
 
