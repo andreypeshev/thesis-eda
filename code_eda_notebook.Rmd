@@ -103,20 +103,106 @@ data_prb %>% filter(a == 2 & b==2 & c==1 & d==1 & e==1) %>% ggplot(aes(x=g, y=x)
 
 For-loop comparing conditions of col f and col g
 ```{r}
+start_time <- Sys.time()
 
+#looping through all the possible combinations of conditions
+count <- 0
 for (cond_a in 1:n_distinct(data_prb$a)){
   for (cond_b in 1:n_distinct(data_prb$b)){
     for (cond_c in 1:n_distinct(data_prb$c)){
       for (cond_d in 1:n_distinct(data_prb$d)){
         for (cond_e in 1:n_distinct(data_prb$e)){
+          
+          # col "a" cond 1 combines only with col "b" cond 8 
           if (cond_a == 1 & cond_b != 8){
+            
             next
+          
           }else{
+            #filtering the data 
             filt_data <- data_prb %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e)
+            
+            #looping through the conditions of target columns 
             for (cond_f in 1:n_distinct(filt_data$f)){
               for (cond_g in 1:n_distinct(filt_data$g)){
+                
                 #sum_fg <- filt_data$x + filt_data$z1
-                print(paste("a =", cond_a, "b =", cond_b, "c =", cond_c, "d =", cond_d, "e =", cond_e, "f=", cond_f, "g=", cond_g))
+                print(paste("a =", cond_a, "b =", cond_b, "c =", cond_c, "d =", cond_d, "e =", cond_e, "f =", cond_f, "g =", cond_g))
+                
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+end_time <- Sys.time()
+
+end_time-start_time
+#25 secs
+
+```
+
+
+```{r}
+start_time <- Sys.time()
+#looping through all the possible combinations of conditions
+count <- 0
+for (cond_a in 1:n_distinct(data_prb$a)){
+  for (cond_b in 1:n_distinct(data_prb$b)){
+    for (cond_c in 1:n_distinct(data_prb$c)){
+      for (cond_d in 1:n_distinct(data_prb$d)){
+        for (cond_e in 1:n_distinct(data_prb$e)){
+          #looping through the conditions of target columns 
+          for (cond_f in 1:n_distinct(filt_data$f)){
+            for (cond_g in 1:n_distinct(filt_data$g)){
+          
+          # col "a" cond 1 combines only with col "b" cond 8 
+              if (cond_a == 1 & cond_b != 8){
+            
+                next
+          
+              }else{
+                #filtering the data 
+                filt_data <- data_prb %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e)
+                #sum_fg <- filt_data$x + filt_data$z1
+                print(paste("a =", cond_a, "b =", cond_b, "c =", cond_c, "d =", cond_d, "e =", cond_e, "f =", cond_f, "g =", cond_g))
+                
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+end_time <- Sys.time()
+end_time-start_time
+#57 secs
+
+```
+
+```{r}
+compcond <- function(data, tar1, tar2){
+  for (cond_a in 1:n_distinct(data$a)){
+    for (cond_b in 1:n_distinct(data$b)){
+      for (cond_c in 1:n_distinct(data$c)){
+        for (cond_d in 1:n_distinct(data$d)){
+          for (cond_e in 1:n_distinct(data$e)){
+            # col "a" cond 1 combines only with col "b" cond 8 
+            if (cond_a == 1 & cond_b != 8){
+              next
+            }else{
+              #filtering the data 
+              filt_data <- data %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e)
+              #looping through the conditions of target columns 
+              for (cond_f in 1:n_distinct(filt_data$tar1)){
+                for (cond_g in 1:n_distinct(filt_data$tar2)){
+                  #sum_fg <- filt_data$x + filt_data$z1
+                  print(paste(cond_a, cond_b, cond_c, cond_d, cond_e, cond_f, cond_g))
+                }
               }
             }
           }
@@ -127,4 +213,3 @@ for (cond_a in 1:n_distinct(data_prb$a)){
 }
 
 ```
-
