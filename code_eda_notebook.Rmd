@@ -25,6 +25,7 @@ rm(list=ls())
 #import libraries
 library(ggplot2)
 library(dplyr)
+
 #import data
 all_data <- readRDS("masked_outcome_measures.rds")
 data_prb <- all_data$prb
@@ -199,39 +200,47 @@ CalcEucDist <- function(data, col){
     cols_exp <- colnames(exp_data)
   
     filt_data <- data %>% filter(data[, cols_exp[1]] == exp_data[n, 1], 
-                                    data[, cols_exp[2]] == exp_data[n, 2], 
-                                    data[, cols_exp[3]] == exp_data[n, 3], 
-                                    data[, cols_exp[4]] == exp_data[n, 4], 
-                                    data[, cols_exp[5]] == exp_data[n, 5], 
-                                    data[, cols_exp[6]] == exp_data[n, 6])
+                                 data[, cols_exp[2]] == exp_data[n, 2], 
+                                 data[, cols_exp[3]] == exp_data[n, 3], 
+                                 data[, cols_exp[4]] == exp_data[n, 4], 
+                                 data[, cols_exp[5]] == exp_data[n, 5], 
+                                 data[, cols_exp[6]] == exp_data[n, 6])
   
   
     #calculating Euclidean distance
     euc_vec[n] <- euclideanDistance(filt_data$x)
     
     #saving the data
-    out_data <- cbind(exp_data, euc_vec)
-
-
-    
+    comb_data <- cbind(exp_data, euc_vec)
+    out_data <- comb_data[comb_data$euc_vec != 0, ]
+    out_data <- out_data[order(-out_data$euc_vec), ]
   }
   
-  out_data[out_data$euc_vec != 0, ]
+  out_data
+  
 }
 
 ```
 
 ```{r}
+
 start.time <- Sys.time()
-data_a <- CalcEucDist(data_prb, "a")
-data_b <- CalcEucDist(data_prb, "b")
-data_c <- CalcEucDist(data_prb, "c")
-data_d <- CalcEucDist(data_prb, "d")
-data_e <- CalcEucDist(data_prb, "e")
-data_f <- CalcEucDist(data_prb, "f")
-data_g <- CalcEucDist(data_prb, "g")
+
+params <- colnames(data_prb[1:7])
+
+for(param in params){
+  assign(paste0("data_", param), CalcEucDist(data_prb, param))
+}
+
 end.time <- Sys.time()
 end.time - start.time
+
+```
+
+```{r}
+
+data_a %>% ggplot(aes(x=euc_vec, col=c)) + geom_density()
+
 ```
 
 
