@@ -2,3 +2,4 @@
 .Rhistory
 masked_outcome_measures.rds
 code_eda_notebook.nb.html
+code_eda_notebook.knit.md
