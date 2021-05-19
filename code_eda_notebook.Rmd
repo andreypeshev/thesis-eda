@@ -112,31 +112,32 @@ for (cond_a in 1:n_distinct(data_prb$a)){
     for (cond_c in 1:n_distinct(data_prb$c)){
       for (cond_d in 1:n_distinct(data_prb$d)){
         for (cond_e in 1:n_distinct(data_prb$e)){
-          
-          # col "a" cond 1 combines only with col "b" cond 8 
-          if (cond_a == 1 & cond_b != 8){
-            
-            next
-          
-          }else{
-            #filtering the data 
-            filt_data <- data_prb %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e)
-            
-            #looping through the conditions of target columns 
-            for (cond_f in 1:n_distinct(filt_data$f)){
-              for (cond_g in 1:n_distinct(filt_data$g)){
-                
-                #sum_fg <- filt_data$x + filt_data$z1
-                print(paste("a =", cond_a, "b =", cond_b, "c =", cond_c, "d =", cond_d, "e =", cond_e, "f =", cond_f, "g =", cond_g))
-                
-              }
-            }
+          for(cond_f in 1:n_distinct(data_prb$f)){
+            for(cond_g in 1:n_distinct(data_prb$g)){
+              count <- count + 1
+            }  
           }
         }
       }
     }
   }
 }
+          # col "a" cond 1 combines only with col "b" cond 8 
+          #if (cond_a == 1 & cond_b != 8){
+            
+           # next
+          
+          #}else{
+            #filtering the data 
+            #filt_data <- data_prb %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e)
+            #count <- count + 1
+            #looping through the conditions of target columns 
+            #for (cond_f in 1:n_distinct(filt_data$f)){
+              #for (cond_g in 1:n_distinct(filt_data$g)){
+                
+                #sum_fg <- filt_data$x + filt_data$z1
+                print(paste("a =", cond_a, "b =", cond_b, "c =", cond_c, "d =", cond_d, "e =", cond_e, "f =", cond_f, "g =", cond_g))
+                
 
 end_time <- Sys.time()
 
@@ -185,25 +186,26 @@ end_time-start_time
 ```
 
 ```{r}
-compcond <- function(data, tar1, tar2){
-  for (cond_a in 1:n_distinct(data$a)){
-    for (cond_b in 1:n_distinct(data$b)){
-      for (cond_c in 1:n_distinct(data$c)){
-        for (cond_d in 1:n_distinct(data$d)){
-          for (cond_e in 1:n_distinct(data$e)){
+euclideanDistance <- function(x) sqrt(sum((x - mean(x))^2))
+```
+
+```{r}
+for (cond_a in 1:n_distinct(data_prb$a)){
+  for (cond_b in 1:n_distinct(data_prb$b)){
+    for (cond_c in 1:n_distinct(data_prb$c)){
+      for (cond_d in 1:n_distinct(data_prb$d)){
+        for (cond_e in 1:n_distinct(data_prb$e)){
+          for (cond_f in 1:n_distinct(data_prb$f)){
+         
             # col "a" cond 1 combines only with col "b" cond 8 
             if (cond_a == 1 & cond_b != 8){
               next
             }else{
+              
               #filtering the data 
-              filt_data <- data %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e)
-              #looping through the conditions of target columns 
-              for (cond_f in 1:n_distinct(filt_data$tar1)){
-                for (cond_g in 1:n_distinct(filt_data$tar2)){
-                  #sum_fg <- filt_data$x + filt_data$z1
-                  print(paste(cond_a, cond_b, cond_c, cond_d, cond_e, cond_f, cond_g))
-                }
-              }
+              filt_data <- data_prb %>% filter(a==cond_a & b==cond_b & c==cond_c & d==cond_d & e==cond_e & f==cond_f)
+              euc_data <- euclideanDistance(filt_data$x)
+            
             }
           }
         }
@@ -213,3 +215,76 @@ compcond <- function(data, tar1, tar2){
 }
 
 ```
+
+
+```{r Cond g}
+#Loop comparing all possible conditions of col g 
+
+#create a grid with all possible combinations from a-f
+exp_data <- expand.grid(sapply(data_prb[1:6], levels))
+
+#remove conditions where "a" is 1 and "b" is not 8
+exp_data <- exp_data[!(exp_data$a == 1 & exp_data$b != 8), ]
+
+#empty vector for saving Euc. distances
+euc_dist_g <- rep(0, nrow(exp_data))
+
+#looping through all possible conditions
+for (n in 1:nrow(exp_data)){
+  
+  #filtering the data based on current set of conditions
+  cols_exp <- colnames(exp_data)
+  
+  filt_data <- data_prb %>% filter(data_prb[, cols_exp[1]] == exp_data[n, 1], 
+                                   b == exp_data$b[n], 
+                                   c == exp_data$c[n], 
+                                   d == exp_data$d[n], 
+                                   e == exp_data$e[n], 
+                                   f == exp_data$f[n])
+  
+  #calculating Euclidean distance
+  euc_dist_g[n] <- euclideanDistance(filt_data$x)
+  
+  #saving the data
+  data_euc_g <- cbind(exp_data, euc_dist_g)
+}
+
+```
+
+```{r}
+#Loop comparing all possible conditions of col g 
+
+#create a grid with all possible combinations from a-f
+exp_data <- expand.grid(sapply(data_prb[1:6], levels))
+
+#remove conditions where "a" is 1 and "b" is not 8
+exp_data <- exp_data[!(exp_data$a == 1 & exp_data$b != 8), ]
+
+#empty vector for saving Euc. distances
+euc_dist_g <- rep(0, nrow(exp_data))
+
+#looping through all possible conditions
+for (n in 1:nrow(exp_data)){
+  
+  #filtering the data based on current set of conditions
+  cols_exp <- colnames(exp_data)
+  
+  filt_data <- data_prb %>% filter(data_prb[, cols_exp[1]] == exp_data[n, 1], 
+                                   data_prb[, cols_exp[2]] == exp_data[n, 2], 
+                                   data_prb[, cols_exp[3]] == exp_data[n, 3], 
+                                   data_prb[, cols_exp[4]] == exp_data[n, 4], 
+                                   data_prb[, cols_exp[5]] == exp_data[n, 5], 
+                                   data_prb[, cols_exp[6]] == exp_data[n, 6])
+  
+  
+  #calculating Euclidean distance
+  euc_dist_g[n] <- euclideanDistance(filt_data$x)
+  
+  #saving the data
+  data_euc_g <- cbind(exp_data, euc_dist_g)
+  
+}
+
+```
+
+
