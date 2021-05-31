@@ -25,7 +25,9 @@ rm(list=ls())
 #import libraries
 library(ggplot2)
 library(dplyr)
+#install.packages("cowplot")
 library(cowplot)
+#install.packages("xtable")
 library(xtable)
 
 
@@ -59,41 +61,21 @@ for (i in 1:length(data_prb[1:7])){
 }
 ```
 
-
-Parameter **a**: The largest PRB for the slope and intercept is in condition **3** and in condition **1** for the auxiliary variable.\
-
-Parameter **b**: The mean PRB for *x* in all conditions is almost identical and below zero. The situation is similar for *int*, except for condition **8** - The 75th percentile range is higher and there are more outliers. The mean and 75th percentile range for **z1** in condition **8** is higher and the mean is lower than the other conditions. 
-
-Parameter **c**: The highest mean PRB for **x** is in condition **3**. For **int** the mean is the same across conditions, however the IQR increases. Same goes for **z1**, although the increase is not as drastic. 
-Parameter **d**: The IQR decreases for **x** until condition **4**. For **int** the IQR decreases drastically. For **z1** the situation is more interesting - The IQR increases until condition **3** and then decreases again. 
-
-Parameter **e**: The IQR decreases in each condition for **x**. For **int** and **z1** the PRB distribution looks identical across conditions, except for the many outliers in condition **1** for **z1**. 
-
-Parameter **f**: There seems to be no visible difference across the conditions for all three parameters. 
-
-Parameter **g**: The IQR becomes smaller for **int** and **z1**.  Almost no difference in conditions for **x**. 
-
 ```{r min and max values}
 # min and max PRB for x
 data_prb[which.min(abs(data_prb$x)),]
 data_prb[which.max(abs(data_prb$x)),]
 
-# min and max PRB for int
-data_prb[which.min(abs(data_prb$int)),]
-data_prb[which.max(abs(data_prb$int)),]
+# min and max MCSD for x
+data_mcsd[which.min(abs(data_mcsd$x)),]
+data_mcsd[which.max(abs(data_mcsd$x)),]
 
-# min and max PRB for z1
-data_prb[which.min(abs(data_prb$z1)),]
-data_prb[which.max(abs(data_prb$z1)),]
 ```
 
 ```{r}
 xtabs(~ a+b, data=data_prb)
 ```
 Condition 1 for the a parameter is only paired with condition 8 of the b parameter.
-```{r}
-data_prb %>% filter(a == 3 & c==3 & e==1) %>% ggplot(aes(x=g, y=x)) + geom_boxplot()
-```
 
 For-loop comparing conditions of col f and col g
 
@@ -157,39 +139,23 @@ end.time - start.time
 
 ```
 
-```{r}
-
-data_a %>% filter(b==8, c==3, e==1) %>% ggplot(aes(x=euc_vec)) + geom_density()
-data_prb_a <- data_prb %>% filter(b==8, c==3, e==1)
-data_b %>% filter(c==3, e==1) %>% ggplot(aes(x=euc_vec)) + geom_density()
-data_c %>% filter(b==8, e==1) %>% ggplot(aes(x=euc_vec)) + geom_density()
-data_d %>% filter(b==8, c==3, e==1) %>% ggplot(aes(x=euc_vec)) + geom_density()
-data_e %>% filter(b==8, c==3) %>% ggplot(aes(x=euc_vec)) + geom_density()
-data_f %>% filter(b==8, c==3, e==1) %>% ggplot(aes(x=euc_vec)) + geom_density()
-data_g %>% filter(b==8, c==3, e==1) %>% ggplot(aes(x=euc_vec)) + geom_density()
-
-```
-
-
-Seeing which conditions appear the most in the top 700 rows with the largest euclidean distance for each parameter. 
+Seeing which conditions appear the most in the top 1000 rows with the largest euclidean distance for each parameter. 
 
 ``` {r}
 
 data_vec <- list(data_a, data_b, data_c, data_d, data_e, data_f, data_g)
-
 for (data in data_vec){
-  list_plots <- list()
-  
-  for(col in 1:6){
-    plot <- ggplot(data[1:1000, ], aes(x=data[1:1000, col], y=stat(count))) + geom_bar()
-    list_plots[[col]] <- plot
+  #list_plots <- list()
+  #for(col in 1:6){
+  #  list_plots[[col]] <- ggplot(data[1:1000, ], aes(x=data[1:1000, col]), y=stat(count)) + geom_bar() +xlab(colnames(data[col]))
     
-  }
+  #}
   print(summary(data[1:1000, ]))
-  print(plot_grid(plotlist=list_plots, nrow=2, ncol=2))
+  #print(plot_grid(plotlist=list_plots))
+  #print(list_plots)
 }
 
-ggplot(data_a[1:1000, ], aes(x=d, y=stat(count))) + geom_bar()
+
 ```
 
 ```{r}
@@ -200,55 +166,10 @@ for(i in 1:6){
   plots_a[[i]] <-  plot + geom_bar(y=stat(count))
 } 
 
-plot_grid(plotlist = plots_a )
 ```
 Possible problem conditions are c == 3, e == 1, a == 3 and a == 2. They seem to produce large PRB combined with all other parameters. When comparing conditions in parameter a, d == 1 and d == 2 seem to have the largest frequnecy. The same could be said about conditions g == 3 and g == 4, as well.  
 
 Visualizing data_prb with the suspected problematic conditions. 
-
-```{r}
-
-for(col in 1:7){
-  if (col == 1){
-    large_prb <- data_prb %>% filter(c==3 & e==1) 
-    print(ggplot(large_prb, aes(x=large_prb[, col], y=x)) 
-          + geom_boxplot()  
-          + xlab(colnames(data_prb[col])) 
-    + stat_summary(fun = mean, geom = "point", col = "red") 
-    + stat_summary(fun = mean, geom = "text", col = "red",     
-               vjust = 1.5, aes(label = paste("Mean:", round(..y.., digits = 1)))))
-  
-  }else if(col == 3){
-    large_prb <- data_prb %>% filter(a==3 & e==1) 
-    print(ggplot(large_prb, aes(x=large_prb[, col], y=x)) 
-          + geom_boxplot()
-          + xlab(colnames(data_prb[col]))
-      + stat_summary(fun = mean, geom = "point", col = "red") 
-      + stat_summary(fun = mean, geom = "text", col = "red",     
-               vjust = 1.5, aes(label = paste("Mean:", round(..y.., digits = 1)))))
-  
-  }else if(col == 5){
-     large_prb <- data_prb %>% filter(a==3 & c==3) 
-     print(ggplot(large_prb, aes(x=large_prb[, col], y=x)) 
-          + geom_boxplot() 
-          + xlab(colnames(data_prb[col]))
-      + stat_summary(fun = mean, geom = "point", col = "red") 
-      + stat_summary(fun = mean, geom = "text", col = "red",     
-               vjust = 1.5, aes(label = paste("Mean:", round(..y.., digits = 1)))))
-     
-  }else{
-     large_prb <- data_prb %>% filter(a==3 & c==3 & e==1)
-     print(ggplot(large_prb, aes(x=large_prb[, col], y=x)) 
-          + geom_boxplot() 
-          + xlab(colnames(data_prb[col]))
-      + stat_summary(fun = mean, geom = "point", col = "red") 
-      + stat_summary(fun = mean, geom = "text", col = "red",     
-               vjust = 1.0, aes(label = paste("Mean:", round(..y.., digits = 1)))))
-  }
- 
-}
-
-```
 
 
 ```{r}
@@ -304,7 +225,7 @@ plot_a <- data_prb %>%
  
 plot_b <- data_prb %>% 
   filter(a==3 & c==3 & e==1) %>%
-  ggplot(aes(x=b, y=x)) + geom_boxplot() + theme_classic()
+  ggplot(aes(x=b, y=x)) + geom_boxplot() + theme_classic() 
     
  
 plot_c <- data_prb %>% 
@@ -316,13 +237,11 @@ plot_d <- data_prb %>%
   filter(a==3 & c==3 & e==1) %>%
   ggplot(aes(x=d, y=x)) + geom_boxplot() + theme_classic()
           
-  
 
 plot_e <- data_prb %>% 
   filter(a==3 & c==3) %>%
   ggplot(aes(x=e, y=x)) + geom_boxplot() + theme_classic()
-          
-  
+
  
 plot_f <- data_prb %>% 
   filter(a==3 & c==3 & e==1) %>%
@@ -339,45 +258,45 @@ plot_grid(plot_a, plot_b, plot_c, plot_d, plot_e, plot_f, plot_g)
 ```{r}
 
 plot_a <- data_prb %>% 
-  filter(c==2 & e==1) %>%
+  filter(c==3 & e==1) %>%
   ggplot(aes(x=a, y=x)) + geom_boxplot() + theme_classic()
  
 plot_b <- data_prb %>% 
-  filter(a==3 & c==3 & e==1) %>%
+  filter(a==2 & c==3 & e==1) %>%
   ggplot(aes(x=b, y=x)) + geom_boxplot() + theme_classic()
     
  
 plot_c <- data_prb %>% 
-  filter(a==3 & e==1) %>%
+  filter(a==2 & e==1) %>%
   ggplot(aes(x=c, y=x)) + geom_boxplot() + theme_classic()
     
   
 plot_d <- data_prb %>% 
-  filter(a==3 & c==3 & e==1) %>%
+  filter(a==2 & c==3 & e==1) %>%
   ggplot(aes(x=d, y=x)) + geom_boxplot() + theme_classic()
           
-  
 
 plot_e <- data_prb %>% 
-  filter(a==3 & c==3) %>%
+  filter(a==2 & c==3) %>%
   ggplot(aes(x=e, y=x)) + geom_boxplot() + theme_classic()
-          
-  
+
  
 plot_f <- data_prb %>% 
-  filter(a==3 & c==3 & e==1) %>%
+  filter(a==2 & c==3 & e==1) %>%
   ggplot(aes(x=f, y=x)) + geom_boxplot() + theme_classic()
           
      
 plot_g <- data_prb %>% 
-  filter(a==3 & c==3 & e==1) %>% 
+  filter(a==2 & c==3 & e==1) %>% 
   ggplot(aes(x=g, y=x)) + geom_boxplot() + theme_classic()
           
 plot_grid(plot_a, plot_b, plot_c, plot_d, plot_e, plot_f, plot_g)
+#ggsave("aec_filtered_boxplots2.png")
 ```
 
 ```{r}
 
+#running the Euclidean distance for all parameters 
 start.time <- Sys.time()
 
 params <- colnames(data_mcsd[1:7])
@@ -450,7 +369,8 @@ for(row in 1:nrow(combinations_ace)){
 
 mean_data_ace <- cbind(combinations_ace, mean_prb)
 mean_data_ace <- mean_data_ace[order(mean_data_ace$mean_prb), ]
-print(xtable(mean_data_ace), include.rownames=FALSE)
+mean_data_ace
+#print(xtable(mean_data_ace), include.rownames=FALSE)
 ```
 
 Mean PRB with all possible combinations of parameters d and f. 
@@ -470,7 +390,7 @@ mean_data_fd <- mean_data_fd[order(mean_data_fd$mean_prb), ]
 mean_data_fd
 ```
 
-MCSD with all possible combinations of a, c and e.
+MCSD with all possible combinations of e, c, g and g.
 ```{r}
 combinations_cefg <- expand.grid(lapply(data_mcsd[, c("c", "e", "f","g")], levels))
 mean_mcsd <- rep(0, nrow(combinations_cefg))
@@ -488,9 +408,11 @@ for(row in 1:nrow(combinations_cefg)){
 
 mean_mcsd_cefg <- cbind(combinations_cefg, mean_mcsd)
 mean_mcsd_cefg <- mean_mcsd_cefg[order(-mean_mcsd_cefg$mean_mcsd), ]
-print(xtable(mean_mcsd_cefg), include.rownames=FALSE)
+mean_mcsd_cefg
+#print(xtable(mean_mcsd_cefg), include.rownames=FALSE)
 ```
 
+Boxplots for all conditions filtered on c==3 & e==1 & f==1 & g==4.
 ```{r}
 
 plot_a <- data_mcsd %>% 
@@ -512,12 +434,10 @@ plot_d <- data_mcsd %>%
   ggplot(aes(x=d, y=x)) + geom_boxplot() + theme_classic()
           
   
-
 plot_e <- data_mcsd %>% 
   filter(c==3 & f==1 & g==4) %>%
   ggplot(aes(x=e, y=x)) + geom_boxplot() + theme_classic()
           
-  
  
 plot_f <- data_mcsd %>% 
   filter(c==3 & e==1 & g==4) %>%
