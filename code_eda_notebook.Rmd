@@ -46,12 +46,6 @@ summary(data_mcsd)
 #number of unique conditions for each parameter 
 str(data_prb)
 ```
-```{r}
-#box plots for PRB with the different conditions for x
-for (i in 1:length(data_prb[1:7])){
-  print(ggplot(data_prb, aes(x=data_prb[, i], y=x)) + geom_boxplot() + xlab(colnames(data_prb[i])))
-}
-```
 
 ```{r}
 #min and max PRB for x
@@ -116,7 +110,6 @@ CalcEucDist <- function(data, col){
 ```
 
 ```{r}
-
 #running the Euclidean distance function for each parameter for PRB 
 start.time <- Sys.time()
 
